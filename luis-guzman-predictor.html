@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐙 Luis Guzmán — Oráculo del Mundial 2026</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#5C45B5;--purple-d:#3C3489;--purple-l:#9F7FE0;
+  --gold:#D4A017;--gold-l:#F5CE6B;--green:#25D366;
+  --bg:#0A0814;--bg2:#110E1F;--bg3:#1A1630;
+  --text:#F0EDFF;--text2:#A89CC8;--border:rgba(140,120,220,0.2);
+}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.hero{text-align:center;padding:2rem 1rem 1rem;position:relative}
+.hero::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(92,69,181,0.2) 0%,transparent 70%);pointer-events:none}
+.tag{display:inline-block;background:rgba(92,69,181,0.25);border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--purple-l);padding:4px 14px;margin-bottom:1rem}
+h1{font-size:clamp(36px,9vw,64px);font-weight:800;line-height:1;letter-spacing:-1px;margin-bottom:6px}
+h1 span{color:var(--purple-l)}
+.hero-sub{font-size:13px;color:var(--text2);margin-bottom:1.2rem}
+.pulpo-wrap{display:flex;justify-content:center;margin-bottom:.8rem}
+#pulpo-svg{width:140px;height:140px;filter:drop-shadow(0 0 18px rgba(159,127,224,0.4));cursor:pointer;transition:transform .2s}
+#pulpo-svg:hover{transform:scale(1.06)}
+.bubble{max-width:480px;margin:0 auto 1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:14px 20px;font-size:14px;color:var(--text);text-align:center;line-height:1.55;position:relative;min-height:56px}
+.bubble::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg3)}
+.main{max-width:680px;margin:0 auto;padding:0 1rem 3rem}
+.section-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--purple-l);margin-bottom:12px;display:block}
+.vs-container{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:12px;margin-bottom:1.5rem}
+.team-panel-label{font-size:11px;color:var(--text2);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.vs-badge{display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--purple-l);padding-top:28px}
+.dropdown{position:relative;width:100%}
+.dropdown-btn{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px}
+.dropdown-btn:hover{border-color:var(--purple);background:var(--bg3)}
+.dropdown-btn.selected{border-color:var(--purple-l);background:rgba(92,69,181,0.15)}
+.dropdown-btn .caret{margin-left:auto;color:var(--text2);font-size:10px}
+.teams-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;max-height:260px;overflow-y:auto;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
+.teams-list.open{display:block}
+.teams-list::-webkit-scrollbar{width:4px}
+.teams-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none}
+.search-input::placeholder{color:var(--text2)}
+.conf-header{padding:6px 12px 2px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--purple-l);background:rgba(92,69,181,0.08);border-bottom:1px solid var(--border)}
+.team-opt{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s}
+.team-opt:hover{background:rgba(92,69,181,0.15)}
+.team-opt:last-child{border-bottom:none}
+.predict-btn{display:block;width:100%;max-width:300px;margin:0 auto 1.5rem;padding:14px 24px;background:var(--purple);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all .15s}
+.predict-btn:hover{background:var(--purple-d);transform:translateY(-1px)}
+.predict-btn:disabled{background:var(--bg3);color:var(--text2);cursor:not-allowed;transform:none}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem;display:none}
+.result-card.show{display:block}
+.matchup-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
+.team-result{text-align:center}
+.team-result .res-flag{font-size:44px;display:block;margin-bottom:6px;line-height:1}
+.team-result .res-name{font-size:12px;color:var(--text2)}
+.team-result .res-pct{font-size:26px;font-weight:700;margin-top:4px}
+.team-result.winner .res-flag{filter:drop-shadow(0 0 10px rgba(212,160,23,0.6))}
+.team-result.winner .res-pct{color:var(--gold-l)}
+.team-result.loser .res-flag{opacity:.45}
+.team-result.loser .res-pct{color:var(--text2)}
+.vs-result{font-size:16px;font-weight:800;color:var(--text2)}
+.winner-banner{background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);border-radius:12px;padding:14px 16px;text-align:center;margin-bottom:1rem}
+.wb-label{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
+.wb-name{font-size:22px;font-weight:700;color:var(--gold-l);margin-bottom:4px}
+.wb-quote{font-size:13px;color:var(--text2);font-style:italic;line-height:1.4}
+.bar-compare{margin-bottom:1rem}
+.bar-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px}
+.bar-track{height:8px;background:var(--bg3);border-radius:8px;overflow:hidden;display:flex}
+.bar-a{background:var(--purple-l);height:100%;transition:width .9s ease}
+.bar-b{background:#E05C5C;height:100%;transition:width .9s ease}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.stat-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.stat-icon{font-size:18px;margin-bottom:3px}
+.stat-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.stat-val{font-size:13px;font-weight:600;margin-top:2px}
+.analysis-box{background:rgba(92,69,181,0.08);border:1px solid rgba(92,69,181,0.25);border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.analysis-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.analysis-title{font-size:13px;font-weight:700;color:var(--purple-l);text-transform:uppercase;letter-spacing:1px}
+.analysis-loading{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:13px}
+.analysis-text{font-size:14px;color:var(--text);line-height:1.75}
+.analysis-text p{margin-bottom:.75rem}
+.analysis-text p:last-child{margin-bottom:0}
+.analysis-text strong{color:var(--purple-l);font-weight:600}
+.factors-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.factor-item{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.factor-icon{font-size:16px;margin-bottom:3px}
+.factor-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.factor-val{font-size:12px;color:var(--text);line-height:1.3}
+.wa-btn{display:none;width:100%;padding:14px;background:var(--green);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+.wa-btn.show{display:flex}
+.wa-btn:hover{background:#1da851}
+.copy-btn{display:none;width:100%;padding:11px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:12px;font-size:13px;cursor:pointer;transition:all .15s;margin-bottom:1rem}
+.copy-btn.show{display:block}
+.copy-btn:hover{background:var(--bg3);color:var(--text)}
+.footer-q{text-align:center;font-size:12px;color:var(--text2);font-style:italic;display:none;margin-top:4px}
+.footer-q.show{display:block}
+@keyframes wobble{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.predicting #pulpo-svg{animation:wobble .55s ease-in-out infinite}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.dot-pulse{display:inline-flex;gap:4px;align-items:center}
+.dot-pulse span{width:6px;height:6px;border-radius:50%;background:var(--purple-l);animation:dp .9s ease-in-out infinite}
+.dot-pulse span:nth-child(2){animation-delay:.15s}
+.dot-pulse span:nth-child(3){animation-delay:.3s}
+@keyframes dp{0%,80%,100%{transform:scale(.5);opacity:.4}40%{transform:scale(1);opacity:1}}
+@media(max-width:480px){.vs-container{gap:6px}.stats-grid{grid-template-columns:repeat(2,1fr)}.factors-grid{grid-template-columns:1fr}h1{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="tag">⚽ Mundial 2026 — USA / México / Canadá</div>
+  <h1>Luis <span>Guzmán</span><br>Predice</h1>
+  <p class="hero-sub">El pulpo oráculo más sabio del fútbol mundial · 48 selecciones clasificadas</p>
+  <div class="pulpo-wrap" id="pulpo-container">
+    <svg id="pulpo-svg" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="80" cy="72" rx="38" ry="44" fill="#7B52C0"/>
+      <ellipse cx="80" cy="60" rx="30" ry="28" fill="#9B6FDE"/>
+      <ellipse cx="72" cy="48" rx="12" ry="8" fill="rgba(255,255,255,0.1)"/>
+      <ellipse cx="68" cy="58" rx="9" ry="10" fill="white"/>
+      <ellipse cx="92" cy="58" rx="9" ry="10" fill="white"/>
+      <circle cx="70" cy="59" r="5.5" fill="#1A0D40"/>
+      <circle cx="94" cy="59" r="5.5" fill="#1A0D40"/>
+      <circle cx="72" cy="57" r="1.8" fill="white"/>
+      <circle cx="96" cy="57" r="1.8" fill="white"/>
+      <path d="M70,74 Q80,83 90,74" stroke="#5A3A9B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M46,100 Q26,118 24,141 Q22,153 28,156" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M54,110 Q38,128 38,150 Q38,160 44,162" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M64,116 Q56,136 58,154 Q59,162 64,164" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M80,118 Q80,140 80,157" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M96,116 Q104,136 102,154 Q101,162 96,164" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M106,110 Q122,128 122,150 Q122,160 116,162" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M114,100 Q134,118 136,141 Q138,153 132,156" stroke="#6B44B0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <ellipse cx="80" cy="34" rx="36" ry="7" fill="#3C2A95"/>
+      <rect x="50" y="9" width="60" height="27" rx="7" fill="#4E39AE"/>
+      <text id="sombrero-text" x="80" y="27" text-anchor="middle" font-size="15" fill="#D4B8FF" font-weight="600">???</text>
+    </svg>
+  </div>
+  <div class="bubble" id="bubble">Soy Luis Guzmán, el pulpo oráculo. Elige dos selecciones del Mundial 2026 y te revelaré quién ganará...</div>
+</div>
+
+<div class="main">
+  <span class="section-label">Elige los dos equipos que se enfrentan</span>
+  <div class="vs-container">
+    <div>
+      <div class="team-panel-label">Equipo 1</div>
+      <div class="dropdown" id="dd-a">
+        <button class="dropdown-btn" id="btn-a" onclick="toggleDropdown('a')">
+          <span id="flag-a">🌍</span><span id="name-a">Seleccionar...</span><span class="caret">▼</span>
+        </button>
+        <div class="teams-list" id="list-a">
+          <div style="padding:8px 12px"><input class="search-input" placeholder="Buscar país..." oninput="filterList('a',this.value)" autocomplete="off"/></div>
+          <div id="opts-a"></div>
+        </div>
+      </div>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div>
+      <div class="team-panel-label">Equipo 2</div>
+      <div class="dropdown" id="dd-b">
+        <button class="dropdown-btn" id="btn-b" onclick="toggleDropdown('b')">
+          <span id="flag-b">🌍</span><span id="name-b">Seleccionar...</span><span class="caret">▼</span>
+        </button>
+        <div class="teams-list" id="list-b">
+          <div style="padding:8px 12px"><input class="search-input" placeholder="Buscar país..." oninput="filterList('b',this.value)" autocomplete="off"/></div>
+          <div id="opts-b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="predict-btn" id="predict-btn" disabled>🐙 Que prediga el Pulpo</button>
+
+  <div class="result-card" id="result-card">
+    <div class="matchup-row">
+      <div class="team-result" id="side-a">
+        <span class="res-flag" id="ra-flag">🏳</span>
+        <div class="res-name" id="ra-name">—</div>
+        <div class="res-pct" id="ra-pct">—%</div>
+      </div>
+      <div class="vs-result">VS</div>
+      <div class="team-result" id="side-b">
+        <span class="res-flag" id="rb-flag">🏳</span>
+        <div class="res-name" id="rb-name">—</div>
+        <div class="res-pct" id="rb-pct">—%</div>
+      </div>
+    </div>
+    <div class="winner-banner">
+      <div class="wb-label">🏆 El oráculo predice</div>
+      <div class="wb-name" id="wb-name">—</div>
+      <div class="wb-quote" id="wb-quote">—</div>
+    </div>
+    <div class="bar-compare">
+      <div class="bar-labels"><span id="bl-a">—</span><span id="bl-b">—</span></div>
+      <div class="bar-track"><div class="bar-a" id="bar-a" style="width:50%"></div><div class="bar-b" id="bar-b" style="width:50%"></div></div>
+    </div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="analysis-box">
+      <div class="analysis-header">
+        <span style="font-size:20px">🧠</span>
+        <span class="analysis-title">Análisis del Pulpo — Por qué y cómo ganará</span>
+      </div>
+      <div id="analysis-content">
+        <div class="analysis-loading"><div class="dot-pulse"><span></span><span></span><span></span></div><span>Luis Guzmán elabora el análisis...</span></div>
+      </div>
+      <div class="factors-grid" id="factors-grid" style="display:none"></div>
+    </div>
+  </div>
+
+  <button class="wa-btn" id="wa-btn">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Compartir por WhatsApp
+  </button>
+  <button class="copy-btn" id="copy-btn">📋 Copiar predicción</button>
+  <p class="footer-q" id="footer-q">"La pelota obedece al pulpo" — Luis Guzmán, oráculo oficial 🐙</p>
+</div>
+
+<script>
+// 48 selecciones REALES del Mundial 2026
+const confederaciones = [
+  {
+    nombre: "CONMEBOL — Sudamérica",
+    equipos: [
+      {name:"Argentina",    flag:"🇦🇷", base:90, style:"contraataque veloz", fortaleza:"Campeona vigente, Scaloni como estratega élite y delantera letal", debilidad:"Puede sufrir ante presión alta durante 90 minutos"},
+      {name:"Brasil",       flag:"🇧🇷", base:85, style:"técnico y vertical",  fortaleza:"Dominio del balón, velocidad en bandas y habilidad individual superior", debilidad:"Falló en momentos clave en torneos recientes"},
+      {name:"Colombia",     flag:"🇨🇴", base:72, style:"creativo",            fortaleza:"Mediocampo dinámico con jugadores de alto nivel europeo", debilidad:"Irregular en partidos de alta exigencia defensiva"},
+      {name:"Ecuador",      flag:"🇪🇨", base:58, style:"físico y ordenado",   fortaleza:"Sólido bloque medio y buen juego aéreo", debilidad:"Falta de creatividad para romper defensas cerradas"},
+      {name:"Paraguay",     flag:"🇵🇾", base:48, style:"defensivo",           fortaleza:"Disciplina táctica y dureza física reconocida", debilidad:"Muy conservador, poco peligroso en ataque"},
+      {name:"Uruguay",      flag:"🇺🇾", base:70, style:"defensivo y garra",   fortaleza:"Mentalidad ganadora histórica y solidez defensiva legendaria", debilidad:"Ataque limitado sin Suárez en plenitud"},
+    ]
+  },
+  {
+    nombre: "UEFA — Europa",
+    equipos: [
+      {name:"Alemania",          flag:"🇩🇪", base:80, style:"organizado",         fortaleza:"Estructura táctica renovada y mentalidad ganadora germana", debilidad:"Le cuesta ante equipos muy físicos y directos"},
+      {name:"Austria",           flag:"🇦🇹", base:60, style:"presión alta",        fortaleza:"Pressing intenso y buen trabajo colectivo de generación joven", debilidad:"Sin estrellas de nivel mundial individual"},
+      {name:"Bélgica",           flag:"🇧🇪", base:68, style:"mixto",               fortaleza:"Experiencia mundialista y calidad en mediocampo", debilidad:"Generación dorada en declive, sin recambio claro"},
+      {name:"Bosnia y Herzegovina", flag:"🇧🇦", base:52, style:"físico",           fortaleza:"Sorpresa del repechaje, eliminó a Italia, mentalidad de guerreros", debilidad:"Primera gran cita mundialista, falta rodaje top"},
+      {name:"Croacia",           flag:"🇭🇷", base:72, style:"posesión táctica",    fortaleza:"Mediocampo brillante con Modrić y experiencia de finales mundiales", debilidad:"Defensivamente vulnerable ante velocidad extrema"},
+      {name:"España",            flag:"🇪🇸", base:88, style:"posesión y pressing", fortaleza:"Campeona de Euro 2024, tiqui-taca renovado con generación joven", debilidad:"Puede perder ante bloques defensivos muy bajos"},
+      {name:"Escocia",           flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", base:50, style:"físico e intenso", fortaleza:"Garra e intensidad escocesa característica, motivación histórica", debilidad:"Calidad técnica por debajo del nivel de élite mundial"},
+      {name:"Francia",           flag:"🇫🇷", base:86, style:"físico y veloz",      fortaleza:"Velocidad brutal en transiciones, potencia y profundidad de plantel", debilidad:"Dependencia de estrellas, colectivo a veces irregular"},
+      {name:"Inglaterra",        flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", base:82, style:"directo y potente", fortaleza:"Poderío ofensivo, profundidad de banquillo y mentalidad ganadora", debilidad:"Históricamente flaquea en penales bajo presión"},
+      {name:"Noruega",           flag:"🇳🇴", base:70, style:"directo y físico",    fortaleza:"Haaland como máquina goleadora imparable en el mundo", debilidad:"Depende demasiado de Haaland, colectivo mejorable"},
+      {name:"Países Bajos",      flag:"🇳🇱", base:78, style:"fútbol total",        fortaleza:"Fútbol total renovado con generación joven de primer nivel", debilidad:"Inconsistente históricamente en fase eliminatoria"},
+      {name:"Portugal",          flag:"🇵🇹", base:82, style:"versátil",            fortaleza:"Ataque versátil, Bernardo Silva y generación dorada presente", debilidad:"Transición post-Ronaldo aún en proceso de consolidar"},
+      {name:"Rep. Checa",        flag:"🇨🇿", base:58, style:"organizado",          fortaleza:"Experiencia europea y solidez táctica comprobada", debilidad:"Sin la explosividad ofensiva de las grandes potencias"},
+      {name:"Suecia",            flag:"🇸🇪", base:62, style:"físico y ordenado",   fortaleza:"Sólido colectivo y determinación nórdica bajo presión", debilidad:"Sin referente goleador del nivel de Ibrahimovic"},
+      {name:"Suiza",             flag:"🇨🇭", base:65, style:"defensivo sólido",    fortaleza:"Organización impecable, Xhaka como cerebro del equipo", debilidad:"Le cuesta generar peligro real contra defensas organizadas"},
+      {name:"Turquía",           flag:"🇹🇷", base:62, style:"contraataque",        fortaleza:"Velocidad en bandas y eficacia goleadora en transiciones", debilidad:"Defensivamente vulnerable ante equipos de posesión"},
+    ]
+  },
+  {
+    nombre: "CAF — África",
+    equipos: [
+      {name:"Argelia",       flag:"🇩🇿", base:55, style:"técnico",          fortaleza:"Creatividad en mediocampo y buena técnica individual", debilidad:"Irregularidad defensiva bajo presión sostenida"},
+      {name:"Cabo Verde",    flag:"🇨🇻", base:42, style:"físico",           fortaleza:"Debutante histórico, talento físico y sorpresa potencial", debilidad:"Sin experiencia mundialista, primer Mundial en su historia"},
+      {name:"Costa de Marfil", flag:"🇨🇮", base:62, style:"potencia física", fortaleza:"Generación con experiencia europea de alto nivel en clubs", debilidad:"Irregularidad en torneos importantes bajo presión"},
+      {name:"Egipto",        flag:"🇪🇬", base:58, style:"contraataque",     fortaleza:"Solidez defensiva y peligro letal en contragolpe con Salah", debilidad:"Dependencia extrema de Salah, sin plan B ofensivo"},
+      {name:"Ghana",         flag:"🇬🇭", base:50, style:"físico y veloz",   fortaleza:"Talento individual en Europa y velocidad desbordante", debilidad:"Colectivo irregular, falló en mundiales recientes"},
+      {name:"Marruecos",     flag:"🇲🇦", base:70, style:"defensivo sólido", fortaleza:"Semifinalistas 2022, bloque defensivo histórico del fútbol africano", debilidad:"Le cuesta sostener el ritmo intenso en segunda parte"},
+      {name:"RD del Congo",  flag:"🇨🇩", base:45, style:"físico",           fortaleza:"Regreso histórico tras 52 años, talento en bruto y hambre competitiva", debilidad:"Sin cohesión táctica consolidada a nivel mundial"},
+      {name:"Senegal",       flag:"🇸🇳", base:65, style:"físico y potente", fortaleza:"Potencia física, Mané y talento africano de primera línea", debilidad:"Inconsistencia defensiva en momentos decisivos"},
+      {name:"Sudáfrica",     flag:"🇿🇦", base:48, style:"físico",           fortaleza:"Regreso mundialista, motivación extrema de representar al continente", debilidad:"Nivel técnico por debajo de las grandes selecciones africanas"},
+      {name:"Túnez",         flag:"🇹🇳", base:50, style:"organizado",       fortaleza:"Disciplina táctica y capacidad de sorprender a rivales mayores", debilidad:"Sin estrellas de nivel diferencial para partidos clave"},
+    ]
+  },
+  {
+    nombre: "AFC — Asia",
+    equipos: [
+      {name:"Arabia Saudita", flag:"🇸🇦", base:55, style:"defensivo + sorpresa", fortaleza:"Sorprendió al mundo en 2022 ganando a Argentina, motivación máxima", debilidad:"No puede mantener nivel alto durante 90 minutos completos"},
+      {name:"Australia",      flag:"🇦🇺", base:58, style:"físico y guerrero",     fortaleza:"Actitud guerrera, experiencia y capacidad demostrada de sorprender", debilidad:"Calidad técnica limitada contra la élite mundial"},
+      {name:"Catar",          flag:"🇶🇦", base:40, style:"organizado",            fortaleza:"Anfitrión 2022, experiencia reciente en alta competencia mundialista", debilidad:"Nivel técnico muy por debajo del top mundial"},
+      {name:"Corea del Sur",  flag:"🇰🇷", base:65, style:"contraataque veloz",    fortaleza:"Velocidad, trabajo colectivo incansable y figuras en Europa top", debilidad:"Depende mucho de jugadores clave como Son Heung-min"},
+      {name:"Irak",           flag:"🇮🇶", base:45, style:"físico",               fortaleza:"Clasificó en el repechaje final, hambre histórica de competir", debilidad:"Primer Mundial desde México 1986, falta rodaje élite"},
+      {name:"Irán",           flag:"🇮🇷", base:55, style:"defensivo",            fortaleza:"Solidez defensiva y experiencia mundialista acumulada", debilidad:"Juego conservador que limita potencial ofensivo"},
+      {name:"Japón",          flag:"🇯🇵", base:68, style:"presión coordinada",    fortaleza:"Disciplina táctica élite y pressing coordinado impresionante", debilidad:"Físicamente inferior ante europeos de gran envergadura"},
+      {name:"Jordania",       flag:"🇯🇴", base:42, style:"ordenado",             fortaleza:"Debutante histórico, organización y entrega colectiva total", debilidad:"Sin experiencia mundialista, calidad técnica limitada"},
+      {name:"Uzbekistán",     flag:"🇺🇿", base:44, style:"técnico emergente",    fortaleza:"Debutante histórico, crecimiento notable del fútbol centroasiático", debilidad:"Sin experiencia en torneos mundiales de este nivel"},
+    ]
+  },
+  {
+    nombre: "CONCACAF — Norte y Centroamérica",
+    equipos: [
+      {name:"Canadá",        flag:"🇨🇦", base:62, style:"físico y ambicioso",  fortaleza:"Davies como motor, generación joven ambiciosa y anfitrión en casa", debilidad:"Poca experiencia en torneos mundiales de alto nivel"},
+      {name:"Curazao",       flag:"🇨🇼", base:38, style:"técnico caribeño",    fortaleza:"Nación más pequeña en clasificar, talento técnico caribeño real", debilidad:"Sin experiencia mundialista, el salto es enorme"},
+      {name:"Estados Unidos", flag:"🇺🇸", base:72, style:"físico y atlético",  fortaleza:"Anfitrión en casa, atletismo superior y mentalidad competitiva", debilidad:"Falta madurez técnica colectiva en momentos decisivos"},
+      {name:"Haití",         flag:"🇭🇹", base:40, style:"físico caribeño",    fortaleza:"Garra caribeña y regreso histórico al fútbol mundial", debilidad:"Falta de rodaje a este nivel y calidad técnica limitada"},
+      {name:"México",        flag:"🇲🇽", base:65, style:"contraataque e intensidad", fortaleza:"Anfitrión en casa, intensidad física y millones de aficionados", debilidad:"El maleficio histórico de no pasar de octavos de final"},
+      {name:"Panamá",        flag:"🇵🇦", base:46, style:"físico y defensivo",  fortaleza:"Corazón y entrega absoluta en cada partido mundialista", debilidad:"Calidad técnica superada por rivales de mayor nivel"},
+    ]
+  },
+  {
+    nombre: "OFC — Oceanía",
+    equipos: [
+      {name:"Nueva Zelanda", flag:"🇳🇿", base:42, style:"físico y ordenado", fortaleza:"Única de Oceanía, disciplina defensiva y bien organizado", debilidad:"Sin talento individual para competir con la élite mundial"},
+    ]
+  }
+];
+
+// Aplanar lista para búsqueda y selección
+const allTeams = confederaciones.flatMap(c => c.equipos);
+
+const frases = [
+  "¡Mis tentáculos temblaron al verlo! {w} aplastará a {l} sin piedad.",
+  "{w} ganará este partido. Los dioses del fútbol ya lo decidieron.",
+  "Lo vi en las profundidades del océano: {w} vencerá a {l}.",
+  "¡No hay duda! {w} se lleva los tres puntos. El pulpo ha hablado.",
+  "{l} lo intentará, pero {w} es superior. Mis ocho brazos lo certifican.",
+  "Las corrientes marinas no mienten: {w} derrotará a {l} esta vez.",
+  "¡Qué partido!, pero al final {w} triunfará. Palabra de Luis Guzmán.",
+];
+
+let selA = null, selB = null, lastResult = null, analysisText = '';
+
+function buildOpts(side) {
+  const c = document.getElementById('opts-'+side);
+  c.innerHTML = '';
+  confederaciones.forEach(conf => {
+    const h = document.createElement('div');
+    h.className = 'conf-header';
+    h.textContent = conf.nombre;
+    c.appendChild(h);
+    conf.equipos.forEach(t => {
+      const d = document.createElement('div');
+      d.className = 'team-opt';
+      d.dataset.name = t.name.toLowerCase();
+      d.dataset.conf = conf.nombre.toLowerCase();
+      d.innerHTML = `<span style="font-size:20px">${t.flag}</span><span style="color:var(--text)">${t.name}</span>`;
+      d.addEventListener('click', () => selectTeam(side, t));
+      c.appendChild(d);
+    });
+  });
+}
+
+function filterList(side, q) {
+  const lq = q.toLowerCase();
+  document.querySelectorAll('#opts-'+side+' .team-opt').forEach(o => {
+    o.style.display = o.dataset.name.includes(lq) ? '' : 'none';
+  });
+  document.querySelectorAll('#opts-'+side+' .conf-header').forEach(h => {
+    // hide conf header if no visible opts follow
+    let next = h.nextElementSibling;
+    let anyVisible = false;
+    while(next && !next.classList.contains('conf-header')){
+      if(next.style.display !== 'none') anyVisible = true;
+      next = next.nextElementSibling;
+    }
+    h.style.display = anyVisible ? '' : 'none';
+  });
+}
+
+function toggleDropdown(side) {
+  const list = document.getElementById('list-'+side);
+  const other = side==='a'?'b':'a';
+  document.getElementById('list-'+other).classList.remove('open');
+  list.classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('.dropdown')) document.querySelectorAll('.teams-list').forEach(l=>l.classList.remove('open'));
+});
+
+function selectTeam(side, t) {
+  if(side==='a') selA=t; else selB=t;
+  document.getElementById('flag-'+side).textContent = t.flag;
+  document.getElementById('name-'+side).textContent = t.name;
+  document.getElementById('btn-'+side).classList.add('selected');
+  document.getElementById('list-'+side).classList.remove('open');
+  document.getElementById('predict-btn').disabled = !(selA && selB && selA.name !== selB.name);
+  document.getElementById('bubble').textContent = selA && selB
+    ? `${selA.flag} ${selA.name} vs ${selB.flag} ${selB.name}... interesante duelo mundialista. ¡Deja que lo analice!`
+    : 'Ahora elige el segundo equipo...';
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('wa-btn').classList.remove('show');
+  document.getElementById('copy-btn').classList.remove('show');
+  document.getElementById('footer-q').classList.remove('show');
+}
+
+buildOpts('a');
+buildOpts('b');
+
+async function fetchAnalysis(winner, loser, pctW, pctL) {
+  const prompt = `Eres Luis Guzmán, un pulpo bromista, dramático y apasionado que predice resultados de fútbol en el Mundial 2026. Acabas de predecir que ${winner.name} (${winner.flag}) derrotará a ${loser.name} (${loser.flag}) con ${pctW}% de probabilidad.
+
+Escribe un análisis en español dividido en exactamente 3 párrafos breves:
+
+Párrafo 1 - POR QUÉ GANA ${winner.name}: Explica su fortaleza táctica ("${winner.fortaleza}") y su estilo de juego "${winner.style}". Sé específico.
+
+Párrafo 2 - POR QUÉ PIERDE ${loser.name}: Explica su debilidad concreta ("${loser.debilidad}") y cómo ${winner.name} la explotará.
+
+Párrafo 3 - CÓMO SERÁ EL PARTIDO: Describe tácticamente el desarrollo del juego, el momento clave del partido y el marcador final estimado.
+
+Estilo: dramático como un pulpo oráculo, con alguna metáfora del océano. Directo y específico, sin generalidades. Máximo 130 palabras totales. Solo texto plano, sin asteriscos, sin markdown, párrafos separados por salto de línea.`;
+
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1000,
+      messages:[{role:"user",content:prompt}]
+    })
+  });
+  const data = await resp.json();
+  return data.content.map(b=>b.text||'').join('');
+}
+
+document.getElementById('predict-btn').addEventListener('click', async () => {
+  if(!selA||!selB) return;
+  const btn = document.getElementById('predict-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Luis Guzmán medita...';
+  document.getElementById('pulpo-container').classList.add('predicting');
+  document.getElementById('bubble').textContent = '🌊 Consultando las corrientes oceánicas del destino...';
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('wa-btn').classList.remove('show');
+  document.getElementById('copy-btn').classList.remove('show');
+  document.getElementById('footer-q').classList.remove('show');
+
+  const seed = (selA.name+selB.name).split('').reduce((a,c)=>a+c.charCodeAt(0),0)+(Date.now()%777);
+  const noiseA = Math.abs(Math.sin(seed*0.13))*20;
+  const noiseB = Math.abs(Math.cos(seed*0.17))*20;
+  const scoreA = selA.base+noiseA;
+  const scoreB = selB.base+noiseB;
+  const total = scoreA+scoreB;
+  const pctA = Math.round(scoreA/total*100);
+  const pctB = 100-pctA;
+  const winner = pctA>=pctB?selA:selB;
+  const loser  = pctA>=pctB?selB:selA;
+  const winPct = pctA>=pctB?pctA:pctB;
+  const losePct= pctA>=pctB?pctB:pctA;
+
+  lastResult = {selA,selB,winner,loser,pctA,pctB,winPct,losePct};
+
+  const frase = frases[seed%frases.length].replace(/{w}/g,winner.name).replace(/{l}/g,loser.name);
+
+  document.getElementById('bubble').textContent = frase;
+  document.getElementById('sombrero-text').textContent = winner.flag;
+  document.getElementById('pulpo-container').classList.remove('predicting');
+
+  document.getElementById('ra-flag').textContent = selA.flag;
+  document.getElementById('ra-name').textContent = selA.name;
+  document.getElementById('ra-pct').textContent = pctA+'%';
+  document.getElementById('rb-flag').textContent = selB.flag;
+  document.getElementById('rb-name').textContent = selB.name;
+  document.getElementById('rb-pct').textContent = pctB+'%';
+  document.getElementById('side-a').className = 'team-result '+(winner===selA?'winner':'loser');
+  document.getElementById('side-b').className = 'team-result '+(winner===selB?'winner':'loser');
+  document.getElementById('wb-name').textContent = `${winner.flag} ${winner.name.toUpperCase()} GANA`;
+  document.getElementById('wb-quote').textContent = frase;
+  document.getElementById('bl-a').textContent = `${selA.flag} ${selA.name} ${pctA}%`;
+  document.getElementById('bl-b').textContent = `${pctB}% ${selB.name} ${selB.flag}`;
+
+  const goalDiff = Math.max(1,Math.round((winPct-losePct)/12));
+  const dom = winPct>=65?'Dominante':winPct>=55?'Favorable':'Reñido';
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">⚽</div><div class="stat-label">Marcador est.</div><div class="stat-val">${goalDiff+1}-${Math.max(0,goalDiff-1)}</div></div>
+    <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">Partido</div><div class="stat-val">${dom}</div></div>
+    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-label">Confianza</div><div class="stat-val">${winPct>=70?'Alta':winPct>=58?'Media':'Baja'}</div></div>
+  `;
+
+  document.getElementById('factors-grid').innerHTML = `
+    <div class="factor-item"><div class="factor-icon">💪</div><div class="factor-label">Fortaleza ${winner.name}</div><div class="factor-val">${winner.fortaleza}</div></div>
+    <div class="factor-item"><div class="factor-icon">⚠️</div><div class="factor-label">Debilidad ${loser.name}</div><div class="factor-val">${loser.debilidad}</div></div>
+    <div class="factor-item"><div class="factor-icon">🎯</div><div class="factor-label">Estilo decisivo</div><div class="factor-val">Juego ${winner.style} impondrá condiciones</div></div>
+    <div class="factor-item"><div class="factor-icon">📉</div><div class="factor-label">Factor riesgo</div><div class="factor-val">${winner.debilidad} — no será suficiente para frenarlos</div></div>
+  `;
+  document.getElementById('factors-grid').style.display = 'grid';
+
+  document.getElementById('analysis-content').innerHTML = `
+    <div class="analysis-loading"><div class="dot-pulse"><span></span><span></span><span></span></div><span>Luis Guzmán redacta el análisis táctico...</span></div>`;
+
+  document.getElementById('result-card').classList.add('show');
+  document.getElementById('result-card').scrollIntoView({behavior:'smooth',block:'start'});
+
+  setTimeout(()=>{
+    document.getElementById('bar-a').style.width = pctA+'%';
+    document.getElementById('bar-b').style.width = pctB+'%';
+  },100);
+
+  btn.innerHTML = '🐙 Predecir otro partido';
+  btn.disabled = false;
+
+  try {
+    const texto = await fetchAnalysis(winner, loser, winPct, losePct);
+    analysisText = texto;
+    const parrafos = texto.split('\n').filter(p=>p.trim().length>0);
+    document.getElementById('analysis-content').innerHTML =
+      '<div class="analysis-text">'+parrafos.map(p=>`<p>${p.trim()}</p>`).join('')+'</div>';
+  } catch(e) {
+    const fallback = `${winner.name} llegará a este partido con su estilo ${winner.style} funcionando a pleno. Su gran fortaleza: ${winner.fortaleza}. Eso será imposible de neutralizar para ${loser.name}.\n\nPor su parte, ${loser.name} sufrirá su mayor debilidad: ${loser.debilidad}. ${winner.name} explotará eso sin piedad desde el primer minuto.\n\nTácticamente, ${winner.name} dominará el mediocampo y buscará el gol en transiciones. El marcador final reflejará su superioridad.`;
+    analysisText = fallback;
+    document.getElementById('analysis-content').innerHTML =
+      '<div class="analysis-text">'+fallback.split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')+'</div>';
+  }
+
+  document.getElementById('wa-btn').classList.add('show');
+  document.getElementById('copy-btn').classList.add('show');
+  document.getElementById('footer-q').classList.add('show');
+});
+
+function buildWAMsg() {
+  if(!lastResult) return '';
+  const {selA,selB,winner,loser,pctA,pctB,winPct} = lastResult;
+  const short = analysisText.replace(/\n/g,' ').slice(0,280);
+  return `🐙 *Luis Guzmán — Oráculo del Mundial 2026*\n\n`+
+    `⚔️ *${selA.flag} ${selA.name} vs ${selB.flag} ${selB.name}*\n\n`+
+    `🏆 *GANADOR: ${winner.flag} ${winner.name.toUpperCase()}*\n\n`+
+    `📊 *Probabilidades:*\n${selA.flag} ${selA.name}: ${pctA}%\n${selB.flag} ${selB.name}: ${pctB}%\n\n`+
+    `🧠 *Análisis del pulpo:*\n${short}...\n\n`+
+    `💪 *Fortaleza ${winner.name}:* ${winner.fortaleza}\n`+
+    `⚠️ *Debilidad ${loser.name}:* ${loser.debilidad}\n\n`+
+    `"La pelota obedece al pulpo" — Luis Guzmán 🐙`;
+}
+
+document.getElementById('wa-btn').addEventListener('click',()=>{
+  window.open('https://wa.me/?text='+encodeURIComponent(buildWAMsg()),'_blank');
+});
+
+document.getElementById('copy-btn').addEventListener('click',()=>{
+  const msg = buildWAMsg();
+  const btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(msg).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=msg;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+  btn.textContent='✅ ¡Copiado!';
+  setTimeout(()=>{btn.textContent='📋 Copiar predicción'},2000);
+});
+</script>
+</body>
+</html>
